@@ -6,9 +6,9 @@ const BufferWriter = require('./lib/writer');
  * @docs https://tools.ietf.org/html/rfc1034
  * @docs https://tools.ietf.org/html/rfc1035
  *
- * <Buffer 29 64 01 00 00 01 00 00 00 00 00 00 
- *       |-ID----------- HEADER ----------->| 
- *      
+ * <Buffer 29 64 01 00 00 01 00 00 00 00 00 00
+ *       |-ID----------- HEADER ----------->|
+ *
  *  03 77 77 77 01 7a 02 63 6e 00 00 01 00 01>
  *   <-W--W--W-----Z-----C--N>|<----------->|
  */
@@ -63,6 +63,7 @@ Packet.TYPE = {
   MX    : 0x0F,
   TXT   : 0x10,
   AAAA  : 0x1C,
+  OPT   : 0x29,
   SPF   : 0x63,
   AXFR  : 0xFC,
   MAILB : 0xFD,
@@ -254,7 +255,7 @@ Packet.Question.prototype.toBuffer = function(writer){
  * @param  {[type]} reader [description]
  * @return {[type]}        [description]
  */
-Packet.Question.parse = 
+Packet.Question.parse =
 Packet.Question.decode = function(reader){
   var question = new Packet.Question();
   if(reader instanceof Buffer){
@@ -332,7 +333,7 @@ Packet.Resource.encode = function(resource, writer){
  * @param  {[type]} reader [description]
  * @return {[type]}        [description]
  */
-Packet.Resource.parse = 
+Packet.Resource.parse =
 Packet.Resource.decode = function(reader){
   if(reader instanceof Buffer){
     reader = new Packet.Reader(reader);
@@ -347,7 +348,7 @@ Packet.Resource.decode = function(reader){
     return resource.type === Packet.TYPE[ type ];
   })[0];
   if(parser in Packet.Resource){
-    resource = Packet.Resource[ parser ].decode.call(resource, reader, length);  
+    resource = Packet.Resource[ parser ].decode.call(resource, reader, length);
   }else{
     console.error('node-dns > unknow parser type: %s(%j)', parser, resource.type);
     var arr = [];
@@ -470,7 +471,7 @@ Packet.Resource.MX.encode = function(record, writer){
 Packet.Resource.MX.decode = function(reader, length){
   this.priority = reader.read(16);
   this.exchange = Packet.Name.decode(reader);
-  return this; 
+  return this;
 };
 /**
  * [AAAA description]
