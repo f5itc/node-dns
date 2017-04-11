@@ -325,7 +325,9 @@ Packet.Resource.encode = function(resource, writer){
   if(encoder in Packet.Resource && Packet.Resource[ encoder ].encode){
     return Packet.Resource[ encoder ].encode(resource, writer);
   }else{
-    console.error('node-dns > unknow encoder %s(%j)', encoder, resource.type);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('node-dns > unknow encoder %s(%j)', encoder, resource.type);
+    }
   }
 };
 /**
@@ -350,10 +352,13 @@ Packet.Resource.decode = function(reader){
   if(parser in Packet.Resource){
     resource = Packet.Resource[ parser ].decode.call(resource, reader, length);
   }else{
-    console.error('node-dns > unknow parser type: %s(%j)', parser, resource.type);
-    var arr = [];
-    while(length--) arr.push(reader.read(8));
-    resource.data = new Buffer(arr);
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('node-dns > unknow parser type: %s(%j)', parser, resource.type);
+    }
+    //var arr = [];
+    //while(length--) arr.push(reader.read(8));
+    //resource.data = new Buffer(arr);
+    resource.data = new Buffer();
   }
   return resource;
 };
